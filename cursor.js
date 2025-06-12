@@ -60,11 +60,10 @@ let bigPos = [];
 let bigVel = [];
 let bigAcc = [];
 
-let bigImgs = [];
-let bigMasked = [];
+// let bigImgs = [];
+// let bigMasked = [];
 
 let bigVideos = [];
-
 
 let gridSpacing = 100;
 let gridColor;
@@ -180,7 +179,7 @@ function setup() {
     medMasked[i] = img;
   }
 
-  // --- LARGE squares setup ---
+  // --- LARGE squares setup (videos now)---
   bigBase = [
     createVector(450, 450),
     createVector(1550, 920),
@@ -190,8 +189,8 @@ function setup() {
   for (let i = 1; i <= numBig; i++) {
     let vid = createVideo(`Large_video${i}.mp4`);
     vid.hide();
-    vid.loop();
-    vid.volume(0);
+    vid.attribute('muted', '');
+    vid.attribute('playsinline', '');
     vid.size(bigSize, bigSize);
     bigVideos.push(vid);
   }
@@ -203,6 +202,7 @@ function setup() {
     bigVel[i] = createVector(0, 0);
     bigAcc[i] = createVector(0, 0);
   }
+
   
   // for (let i = 0; i < numBig; i++) {
   //   let img = bigImgs[i];
@@ -518,6 +518,11 @@ function draw() {
     pop();
   }
 
+}
+
+function mousePressed() {
+  // on first user click, start all videos
+  bigVideos.forEach(v => v.loop());
 }
 
 //----------------------------------------------------------------------
