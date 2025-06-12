@@ -490,33 +490,33 @@ function draw() {
 
 
   noStroke();
-for (let i = 0; i < numBig; i++) {
-  let r = bigPos[i];
-  push();
-    translate(r.x, r.y);
-    drawingContext.save();
-    drawingContext.beginPath();
+  for (let i = 0; i < numBig; i++) {
+    let r = bigPos[i];
+    push();
+      translate(r.x, r.y);
+      drawingContext.save();
+      drawingContext.beginPath();
 
-    const half = bigSize / 2;
-    const rad  = 40;
-    drawingContext.moveTo(-half + rad, -half);
-    drawingContext.lineTo( half - rad, -half);
-    drawingContext.quadraticCurveTo(half, -half, half, -half + rad);
-    drawingContext.lineTo( half, half - rad);
-    drawingContext.quadraticCurveTo(half, half, half - rad, half);
-    drawingContext.lineTo(-half + rad, half);
-    drawingContext.quadraticCurveTo(-half, half, -half, half - rad);
-    drawingContext.lineTo(-half, -half + rad);
-    drawingContext.quadraticCurveTo(-half, -half, -half + rad, -half);
+      const half = bigSize / 2;
+      const rad  = 40;
+      drawingContext.moveTo(-half + rad, -half);
+      drawingContext.lineTo( half - rad, -half);
+      drawingContext.quadraticCurveTo(half, -half, half, -half + rad);
+      drawingContext.lineTo( half, half - rad);
+      drawingContext.quadraticCurveTo(half, half, half - rad, half);
+      drawingContext.lineTo(-half + rad, half);
+      drawingContext.quadraticCurveTo(-half, half, -half, half - rad);
+      drawingContext.lineTo(-half, -half + rad);
+      drawingContext.quadraticCurveTo(-half, -half, -half + rad, -half);
 
-    drawingContext.clip();
+      drawingContext.clip();
 
-    imageMode(CENTER);
-    image(bigVideos[i], 0, 0, bigSize, bigSize);
+      imageMode(CENTER);
+      image(bigVideos[i], 0, 0, bigSize, bigSize);
 
-    drawingContext.restore();
-  pop();
-}
+      drawingContext.restore();
+    pop();
+  }
 
 }
 
