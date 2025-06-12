@@ -63,6 +63,9 @@ let bigAcc = [];
 let bigImgs = [];
 let bigMasked = [];
 
+let bigVideos = [];
+
+
 let gridSpacing = 100;
 let gridColor;
 
@@ -104,9 +107,9 @@ function preload() {
     medImgs[i - 1] = loadImage(`Medium/Medium_${i}.jpg`);
   }
   // 3) Load large images: "Large/Large_1.jpg" → bigImgs[0] … Large_3.jpg
-  for (let i = 1; i <= numBig; i++) {
-    bigImgs[i - 1] = loadImage(`Large/Large_${i}.jpg`);
-  }
+  // for (let i = 1; i <= numBig; i++) {
+  //   bigImgs[i - 1] = loadImage(`Large/Large_${i}.jpg`);
+  // }
 }
 
 //----------------------------------------------------------------------
@@ -183,6 +186,16 @@ function setup() {
     createVector(1550, 920),
     createVector(1300, 250)
   ];
+
+  for (let i = 1; i <= numBig; i++) {
+    let vid = createVideo(`Large_video${i}.mp4`);
+    vid.hide();
+    vid.loop();
+    vid.volume(0);
+    vid.size(bigSize, bigSize);
+    bigVideos.push(vid);
+  }
+
   for (let i = 0; i < numBig; i++) {
     bigNoiseX[i] = random(10);
     bigNoiseY[i] = random(10);
@@ -190,17 +203,17 @@ function setup() {
     bigVel[i] = createVector(0, 0);
     bigAcc[i] = createVector(0, 0);
   }
-  // Create a rounded‐corner mask for each large image:
-  for (let i = 0; i < numBig; i++) {
-    let img = bigImgs[i];
-    img.resize(bigSize, bigSize);
-    let maskG = createGraphics(bigSize, bigSize);
-    maskG.noStroke();
-    maskG.fill(255);
-    maskG.rect(0, 0, bigSize, bigSize, 40);
-    img.mask(maskG);
-    bigMasked[i] = img;
-  }
+  
+  // for (let i = 0; i < numBig; i++) {
+  //   let img = bigImgs[i];
+  //   img.resize(bigSize, bigSize);
+  //   let maskG = createGraphics(bigSize, bigSize);
+  //   maskG.noStroke();
+  //   maskG.fill(255);
+  //   maskG.rect(0, 0, bigSize, bigSize, 40);
+  //   img.mask(maskG);
+  //   bigMasked[i] = img;
+  // }
 
   // --- SLIDER SETUP ---  
 
@@ -466,12 +479,45 @@ function draw() {
   }
 
   // 11) Draw large squares’ masked images on top
+
+// 11) Draw large squares’ masked images on top
+// noStroke();
+// for (let i = 0; i < numBig; i++) {
+//   let r = bigPos[i];
+//   imageMode(CENTER);
+//   image(bigMasked[i], r.x, r.y, bigSize, bigSize);
+// }
+
+
   noStroke();
-  for (let i = 0; i < numBig; i++) {
-    let r = bigPos[i];
+for (let i = 0; i < numBig; i++) {
+  let r = bigPos[i];
+  push();
+    translate(r.x, r.y);
+    drawingContext.save();
+    drawingContext.beginPath();
+
+    const half = bigSize / 2;
+    const rad  = 40;
+    drawingContext.moveTo(-half + rad, -half);
+    drawingContext.lineTo( half - rad, -half);
+    drawingContext.quadraticCurveTo(half, -half, half, -half + rad);
+    drawingContext.lineTo( half, half - rad);
+    drawingContext.quadraticCurveTo(half, half, half - rad, half);
+    drawingContext.lineTo(-half + rad, half);
+    drawingContext.quadraticCurveTo(-half, half, -half, half - rad);
+    drawingContext.lineTo(-half, -half + rad);
+    drawingContext.quadraticCurveTo(-half, -half, -half + rad, -half);
+
+    drawingContext.clip();
+
     imageMode(CENTER);
-    image(bigMasked[i], r.x, r.y, bigSize, bigSize);
-  }
+    image(bigVideos[i], 0, 0, bigSize, bigSize);
+
+    drawingContext.restore();
+  pop();
+}
+
 }
 
 //----------------------------------------------------------------------
