@@ -60,10 +60,8 @@ let bigPos = [];
 let bigVel = [];
 let bigAcc = [];
 
-// let bigImgs = [];
-// let bigMasked = [];
-
-let bigVideos = [];
+let bigImgs = [];
+let bigMasked = [];
 
 let gridSpacing = 100;
 let gridColor;
@@ -106,9 +104,9 @@ function preload() {
     medImgs[i - 1] = loadImage(`Medium/Medium_${i}.jpg`);
   }
   // 3) Load large images: "Large/Large_1.jpg" → bigImgs[0] … Large_3.jpg
-  // for (let i = 1; i <= numBig; i++) {
-  //   bigImgs[i - 1] = loadImage(`Large/Large_${i}.jpg`);
-  // }
+  for (let i = 1; i <= numBig; i++) {
+    bigImgs[i - 1] = loadImage(`Large/Large_${i}.jpg`);
+  }
 }
 
 //----------------------------------------------------------------------
@@ -179,22 +177,12 @@ function setup() {
     medMasked[i] = img;
   }
 
-  // --- LARGE squares setup (videos now)---
+  // --- LARGE squares setup ---
   bigBase = [
     createVector(450, 450),
     createVector(1550, 920),
     createVector(1300, 250)
   ];
-
-  for (let i = 1; i <= numBig; i++) {
-    let vid = createVideo(`Large_video${i}.mp4`);
-    vid.hide();
-    vid.attribute('muted', '');
-    vid.attribute('playsinline', '');
-    vid.size(bigSize, bigSize);
-    bigVideos.push(vid);
-  }
-
   for (let i = 0; i < numBig; i++) {
     bigNoiseX[i] = random(10);
     bigNoiseY[i] = random(10);
@@ -202,86 +190,85 @@ function setup() {
     bigVel[i] = createVector(0, 0);
     bigAcc[i] = createVector(0, 0);
   }
-
-  
-  // for (let i = 0; i < numBig; i++) {
-  //   let img = bigImgs[i];
-  //   img.resize(bigSize, bigSize);
-  //   let maskG = createGraphics(bigSize, bigSize);
-  //   maskG.noStroke();
-  //   maskG.fill(255);
-  //   maskG.rect(0, 0, bigSize, bigSize, 40);
-  //   img.mask(maskG);
-  //   bigMasked[i] = img;
-  // }
+  // Create a rounded‐corner mask for each large image:
+  for (let i = 0; i < numBig; i++) {
+    let img = bigImgs[i];
+    img.resize(bigSize, bigSize);
+    let maskG = createGraphics(bigSize, bigSize);
+    maskG.noStroke();
+    maskG.fill(255);
+    maskG.rect(0, 0, bigSize, bigSize, 40);
+    img.mask(maskG);
+    bigMasked[i] = img;
+  }
 
   // --- SLIDER SETUP ---  
 
   // smallNoiseStep: range [0.0005, 0.01], default 0.002
-  createDiv('Small Square Noise').position(10, 10);
+  createDiv('smallNoiseStep').position(10, 10);
   sliderSmallNoiseStep = createSlider(0.0005, 0.01, 0.002, 0.0001);
   sliderSmallNoiseStep.position(10, 30);
   spanSmallNoiseStep = createSpan(sliderSmallNoiseStep.value());
   spanSmallNoiseStep.position(230, 28);
 
   // smallRadiusMax: range [0, 200], default 50
-  createDiv('Small Square Radius').position(10, 55);
+  createDiv('smallRadiusMax').position(10, 55);
   sliderSmallRadiusMax = createSlider(0, 200, 50, 1);
   sliderSmallRadiusMax.position(10, 75);
   spanSmallRadiusMax = createSpan(sliderSmallRadiusMax.value());
   spanSmallRadiusMax.position(230, 73);
 
   // medNoiseStep: range [0.0005, 0.01], default 0.005
-  createDiv('Medium Square Noise').position(10, 100);
+  createDiv('medNoiseStep').position(10, 100);
   sliderMedNoiseStep = createSlider(0.0005, 0.01, 0.005, 0.0001);
   sliderMedNoiseStep.position(10, 120);
   spanMedNoiseStep = createSpan(sliderMedNoiseStep.value());
   spanMedNoiseStep.position(230, 118);
 
   // medRadiusMax: range [0, 200], default 20
-  createDiv('Medium Square Radius').position(10, 145);
+  createDiv('medRadiusMax').position(10, 145);
   sliderMedRadiusMax = createSlider(0, 200, 20, 1);
   sliderMedRadiusMax.position(10, 165);
   spanMedRadiusMax = createSpan(sliderMedRadiusMax.value());
   spanMedRadiusMax.position(230, 163);
 
   // bigNoiseStep: range [0.0005, 0.01], default 0.005
-  createDiv('Big Square Noise').position(10, 190);
+  createDiv('bigNoiseStep').position(10, 190);
   sliderBigNoiseStep = createSlider(0.0005, 0.01, 0.005, 0.0001);
   sliderBigNoiseStep.position(10, 210);
   spanBigNoiseStep = createSpan(sliderBigNoiseStep.value());
   spanBigNoiseStep.position(230, 208);
 
   // bigRadiusMax: range [0, 200], default 30
-  createDiv('Big Square Radius').position(10, 235);
+  createDiv('bigRadiusMax').position(10, 235);
   sliderBigRadiusMax = createSlider(0, 200, 30, 1);
   sliderBigRadiusMax.position(10, 255);
   spanBigRadiusMax = createSpan(sliderBigRadiusMax.value());
   spanBigRadiusMax.position(230, 253);
 
   // springK: range [0, 0.2], default 0.02
-  createDiv('Stiffness').position(10, 280);
-  sliderSpringK = createSlider(0, 0.2, 0.015, 0.005);
+  createDiv('springK').position(10, 280);
+  sliderSpringK = createSlider(0, 0.2, 0.02, 0.005);
   sliderSpringK.position(10, 300);
   spanSpringK = createSpan(sliderSpringK.value());
   spanSpringK.position(230, 298);
 
   // damping: range [0, 1], default 0.9
-  createDiv('Damping').position(10, 325);
+  createDiv('damping').position(10, 325);
   sliderDamping = createSlider(0, 1, 0.95, 0.01);
   sliderDamping.position(10, 345);
   spanDamping = createSpan(sliderDamping.value());
   spanDamping.position(230, 343);
 
   // impulseStrength: range [0, 2], default 0.5
-  createDiv('Cursor Strength').position(10, 370);
+  createDiv('impulseStrength').position(10, 370);
   sliderImpulse = createSlider(0, 2, 0.5, 0.01);
   sliderImpulse.position(10, 390);
   spanImpulse = createSpan(sliderImpulse.value());
   spanImpulse.position(230, 388);
 
   // impactRadiusFactor: range [1, 20], default 8
-  createDiv('Cursor Size').position(10, 415);
+  createDiv('impactRadiusFactor').position(10, 415);
   sliderImpactRadius = createSlider(1, 20, 20, 1);
   sliderImpactRadius.position(10, 435);
   spanImpactRadius = createSpan(sliderImpactRadius.value());
@@ -479,50 +466,12 @@ function draw() {
   }
 
   // 11) Draw large squares’ masked images on top
-
-// 11) Draw large squares’ masked images on top
-// noStroke();
-// for (let i = 0; i < numBig; i++) {
-//   let r = bigPos[i];
-//   imageMode(CENTER);
-//   image(bigMasked[i], r.x, r.y, bigSize, bigSize);
-// }
-
-
   noStroke();
   for (let i = 0; i < numBig; i++) {
     let r = bigPos[i];
-    push();
-      translate(r.x, r.y);
-      drawingContext.save();
-      drawingContext.beginPath();
-
-      const half = bigSize / 2;
-      const rad  = 40;
-      drawingContext.moveTo(-half + rad, -half);
-      drawingContext.lineTo( half - rad, -half);
-      drawingContext.quadraticCurveTo(half, -half, half, -half + rad);
-      drawingContext.lineTo( half, half - rad);
-      drawingContext.quadraticCurveTo(half, half, half - rad, half);
-      drawingContext.lineTo(-half + rad, half);
-      drawingContext.quadraticCurveTo(-half, half, -half, half - rad);
-      drawingContext.lineTo(-half, -half + rad);
-      drawingContext.quadraticCurveTo(-half, -half, -half + rad, -half);
-
-      drawingContext.clip();
-
-      imageMode(CENTER);
-      image(bigVideos[i], 0, 0, bigSize, bigSize);
-
-      drawingContext.restore();
-    pop();
+    imageMode(CENTER);
+    image(bigMasked[i], r.x, r.y, bigSize, bigSize);
   }
-
-}
-
-function mousePressed() {
-  // on first user click, start all videos
-  bigVideos.forEach(v => v.loop());
 }
 
 //----------------------------------------------------------------------
