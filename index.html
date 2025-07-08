@@ -12,6 +12,18 @@
     <script src="libraries/p5.sound.min.js"></script>
   </head>
 
+  <body>
+    <!-- Your sketch JavaScript file -->
     <script src="cursor.js"></script>
+
+    <!-- One-time auto refresh script -->
+    <script>
+      if (!localStorage.getItem("hasRefreshedOnce")) {
+        localStorage.setItem("hasRefreshedOnce", "true");
+        location.reload();
+      } else {
+        localStorage.removeItem("hasRefreshedOnce");
+      }
+    </script>
   </body>
 </html>
