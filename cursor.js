@@ -496,15 +496,16 @@ function draw() {
   //   image(bigVideos[i], r.x, r.y, bigSize, bigSize);
 
   // }
-
+  
   for (let i = 0; i < numBig; i++) {
     let r = bigPos[i];
     let vid = bigVideos[i];
 
-    if (vid && vid.elt.readyState >= 2) {  // ✅ ensure video is defined AND ready
+    // 🔒 Prevent crash by checking every step
+    if (vid && vid.elt && vid.elt.readyState >= 2) {
       drawingContext.save();
 
-      // Rounded rectangle clip
+      // Rounded rectangle clip path
       let x = r.x - bigSize / 2;
       let y = r.y - bigSize / 2;
       let radius = 40;
@@ -524,7 +525,7 @@ function draw() {
       drawingContext.closePath();
       drawingContext.clip();
 
-      // Draw the video
+      // ✅ Finally draw the video
       imageMode(CENTER);
       image(vid, r.x, r.y, bigSize, bigSize);
 
