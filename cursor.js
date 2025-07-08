@@ -212,24 +212,17 @@ function setup() {
 
   let path = `Videos/Large_video${i + 1}.mp4`;
 
-  // Create a closure to capture the current index
+  // You need a local scope variable to capture the current index
   ((index) => {
-    let vid = createVideo(path, () => {
-      vid.volume(0);
-      vid.hide();
-      
-      // Delay video.loop() to avoid freeze-on-first-load issue
-      setTimeout(() => {
+      let vid = createVideo(path, () => {
+        vid.volume(0);
         vid.loop();
-      }, 300);  // Try 300ms or increase to 500ms if needed
-
-      bigVideos[index] = vid;
-    });
-    
-    vid.size(bigSize, bigSize);
-  })(i);
-}
-
+        vid.hide();
+        bigVideos[index] = vid;  // use index to store in correct order
+      });
+      vid.size(bigSize, bigSize);
+    })(i);
+  }
 
   // --- SLIDER SETUP ---  
 
