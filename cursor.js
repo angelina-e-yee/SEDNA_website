@@ -497,31 +497,40 @@ function draw() {
 
   // }
 
-for (let i = 0; i < numBig; i++) {
-  let r = bigPos[i];
+  for (let i = 0; i < numBig; i++) {
+    let r = bigPos[i];
+    let vid = bigVideos[i];
 
-  // Save drawing state
-  drawingContext.save();
+    if (vid && vid.elt.readyState >= 2) {  // ✅ ensure video is defined AND ready
+      drawingContext.save();
 
-  // Create rounded rect clipping path
-  drawingContext.beginPath();
-  drawingContext.moveTo(r.x + bigSize / 2 - 40, r.y - bigSize / 2); // top-right corner
-  drawingContext.arcTo(r.x + bigSize / 2, r.y - bigSize / 2, r.x + bigSize / 2, r.y + bigSize / 2, 40);
-  drawingContext.arcTo(r.x + bigSize / 2, r.y + bigSize / 2, r.x - bigSize / 2, r.y + bigSize / 2, 40);
-  drawingContext.arcTo(r.x - bigSize / 2, r.y + bigSize / 2, r.x - bigSize / 2, r.y - bigSize / 2, 40);
-  drawingContext.arcTo(r.x - bigSize / 2, r.y - bigSize / 2, r.x + bigSize / 2, r.y - bigSize / 2, 40);
-  drawingContext.closePath();
-  drawingContext.clip();
+      // Rounded rectangle clip
+      let x = r.x - bigSize / 2;
+      let y = r.y - bigSize / 2;
+      let radius = 40;
+      let w = bigSize;
+      let h = bigSize;
 
-  // Draw video inside clipped region
-  imageMode(CENTER);
-  image(bigVideos[i], r.x, r.y, bigSize, bigSize);
+      drawingContext.beginPath();
+      drawingContext.moveTo(x + radius, y);
+      drawingContext.lineTo(x + w - radius, y);
+      drawingContext.quadraticCurveTo(x + w, y, x + w, y + radius);
+      drawingContext.lineTo(x + w, y + h - radius);
+      drawingContext.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+      drawingContext.lineTo(x + radius, y + h);
+      drawingContext.quadraticCurveTo(x, y + h, x, y + h - radius);
+      drawingContext.lineTo(x, y + radius);
+      drawingContext.quadraticCurveTo(x, y, x + radius, y);
+      drawingContext.closePath();
+      drawingContext.clip();
 
-  // Restore normal drawing
-  drawingContext.restore();
-}
+      // Draw the video
+      imageMode(CENTER);
+      image(vid, r.x, r.y, bigSize, bigSize);
 
-
+      drawingContext.restore();
+    }
+  }
 }
 
 //----------------------------------------------------------------------
