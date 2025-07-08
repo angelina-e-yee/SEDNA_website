@@ -212,17 +212,24 @@ function setup() {
 
   let path = `Videos/Large_video${i + 1}.mp4`;
 
-  // You need a local scope variable to capture the current index
+  // Create a closure to capture the current index
   ((index) => {
-      let vid = createVideo(path, () => {
-        vid.volume(0);
+    let vid = createVideo(path, () => {
+      vid.volume(0);
+      vid.hide();
+      
+      // Delay video.loop() to avoid freeze-on-first-load issue
+      setTimeout(() => {
         vid.loop();
-        vid.hide();
-        bigVideos[index] = vid;  // use index to store in correct order
-      });
-      vid.size(bigSize, bigSize);
-    })(i);
-  }
+      }, 300);  // Try 300ms or increase to 500ms if needed
+
+      bigVideos[index] = vid;
+    });
+    
+    vid.size(bigSize, bigSize);
+  })(i);
+}
+
 
   // --- SLIDER SETUP ---  
 
@@ -497,29 +504,29 @@ function draw() {
 
   // }
 
-  for (let i = 0; i < numBig; i++) {
-    let r = bigPos[i];
+for (let i = 0; i < numBig; i++) {
+  let r = bigPos[i];
 
-    // Save drawing state
-    drawingContext.save();
+  // Save drawing state
+  drawingContext.save();
 
-    // Create rounded rect clipping path
-    drawingContext.beginPath();
-    drawingContext.moveTo(r.x + bigSize / 2 - 40, r.y - bigSize / 2); // top-right corner
-    drawingContext.arcTo(r.x + bigSize / 2, r.y - bigSize / 2, r.x + bigSize / 2, r.y + bigSize / 2, 40);
-    drawingContext.arcTo(r.x + bigSize / 2, r.y + bigSize / 2, r.x - bigSize / 2, r.y + bigSize / 2, 40);
-    drawingContext.arcTo(r.x - bigSize / 2, r.y + bigSize / 2, r.x - bigSize / 2, r.y - bigSize / 2, 40);
-    drawingContext.arcTo(r.x - bigSize / 2, r.y - bigSize / 2, r.x + bigSize / 2, r.y - bigSize / 2, 40);
-    drawingContext.closePath();
-    drawingContext.clip();
+  // Create rounded rect clipping path
+  drawingContext.beginPath();
+  drawingContext.moveTo(r.x + bigSize / 2 - 40, r.y - bigSize / 2); // top-right corner
+  drawingContext.arcTo(r.x + bigSize / 2, r.y - bigSize / 2, r.x + bigSize / 2, r.y + bigSize / 2, 40);
+  drawingContext.arcTo(r.x + bigSize / 2, r.y + bigSize / 2, r.x - bigSize / 2, r.y + bigSize / 2, 40);
+  drawingContext.arcTo(r.x - bigSize / 2, r.y + bigSize / 2, r.x - bigSize / 2, r.y - bigSize / 2, 40);
+  drawingContext.arcTo(r.x - bigSize / 2, r.y - bigSize / 2, r.x + bigSize / 2, r.y - bigSize / 2, 40);
+  drawingContext.closePath();
+  drawingContext.clip();
 
-    // Draw video inside clipped region
-    imageMode(CENTER);
-    image(bigVideos[i], r.x, r.y, bigSize, bigSize);
+  // Draw video inside clipped region
+  imageMode(CENTER);
+  image(bigVideos[i], r.x, r.y, bigSize, bigSize);
 
-    // Restore normal drawing
-    drawingContext.restore();
-  }
+  // Restore normal drawing
+  drawingContext.restore();
+}
 
 
 }
