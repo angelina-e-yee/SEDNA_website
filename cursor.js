@@ -50,6 +50,7 @@ let medImgs = [];
 let medMasked = [];
 
 // Large squares (3 of them):
+let bigVideos = [];
 let numBig = 3;
 let bigSize = 280;             // display size of each large square
 let bigBase = [];
@@ -183,23 +184,44 @@ function setup() {
     createVector(1550, 920),
     createVector(1300, 250)
   ];
+  // for (let i = 0; i < numBig; i++) {
+  //   bigNoiseX[i] = random(10);
+  //   bigNoiseY[i] = random(10);
+  //   bigPos[i] = bigBase[i].copy();
+  //   bigVel[i] = createVector(0, 0);
+  //   bigAcc[i] = createVector(0, 0);
+  // }
+  // // Create a rounded‐corner mask for each large image:
+  // for (let i = 0; i < numBig; i++) {
+  //   let img = bigImgs[i];
+  //   img.resize(bigSize, bigSize);
+  //   let maskG = createGraphics(bigSize, bigSize);
+  //   maskG.noStroke();
+  //   maskG.fill(255);
+  //   maskG.rect(0, 0, bigSize, bigSize, 40);
+  //   img.mask(maskG);
+  //   bigMasked[i] = img;
+  // }
+
   for (let i = 0; i < numBig; i++) {
-    bigNoiseX[i] = random(10);
-    bigNoiseY[i] = random(10);
-    bigPos[i] = bigBase[i].copy();
-    bigVel[i] = createVector(0, 0);
-    bigAcc[i] = createVector(0, 0);
-  }
-  // Create a rounded‐corner mask for each large image:
-  for (let i = 0; i < numBig; i++) {
-    let img = bigImgs[i];
-    img.resize(bigSize, bigSize);
-    let maskG = createGraphics(bigSize, bigSize);
-    maskG.noStroke();
-    maskG.fill(255);
-    maskG.rect(0, 0, bigSize, bigSize, 40);
-    img.mask(maskG);
-    bigMasked[i] = img;
+  bigNoiseX[i] = random(10);
+  bigNoiseY[i] = random(10);
+  bigPos[i] = bigBase[i].copy();
+  bigVel[i] = createVector(0, 0);
+  bigAcc[i] = createVector(0, 0);
+
+  let path = `Videos/Large_video${i + 1}.mp4`;
+
+  // You need a local scope variable to capture the current index
+  ((index) => {
+      let vid = createVideo(path, () => {
+        vid.volume(0);
+        vid.loop();
+        vid.hide();
+        bigVideos[index] = vid;  // use index to store in correct order
+      });
+      vid.size(bigSize, bigSize);
+    })(i);
   }
 
   // --- SLIDER SETUP ---  
@@ -466,12 +488,40 @@ function draw() {
   }
 
   // 11) Draw large squares’ masked images on top
-  noStroke();
+  // noStroke();
+  // for (let i = 0; i < numBig; i++) {
+  //   let r = bigPos[i];
+  //   imageMode(CENTER);
+  //   // image(bigMasked[i], r.x, r.y, bigSize, bigSize);
+  //   image(bigVideos[i], r.x, r.y, bigSize, bigSize);
+
+  // }
+
   for (let i = 0; i < numBig; i++) {
     let r = bigPos[i];
+
+    // Save drawing state
+    drawingContext.save();
+
+    // Create rounded rect clipping path
+    drawingContext.beginPath();
+    drawingContext.moveTo(r.x + bigSize / 2 - 40, r.y - bigSize / 2); // top-right corner
+    drawingContext.arcTo(r.x + bigSize / 2, r.y - bigSize / 2, r.x + bigSize / 2, r.y + bigSize / 2, 40);
+    drawingContext.arcTo(r.x + bigSize / 2, r.y + bigSize / 2, r.x - bigSize / 2, r.y + bigSize / 2, 40);
+    drawingContext.arcTo(r.x - bigSize / 2, r.y + bigSize / 2, r.x - bigSize / 2, r.y - bigSize / 2, 40);
+    drawingContext.arcTo(r.x - bigSize / 2, r.y - bigSize / 2, r.x + bigSize / 2, r.y - bigSize / 2, 40);
+    drawingContext.closePath();
+    drawingContext.clip();
+
+    // Draw video inside clipped region
     imageMode(CENTER);
-    image(bigMasked[i], r.x, r.y, bigSize, bigSize);
+    image(bigVideos[i], r.x, r.y, bigSize, bigSize);
+
+    // Restore normal drawing
+    drawingContext.restore();
   }
+
+
 }
 
 //----------------------------------------------------------------------
